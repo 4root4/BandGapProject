@@ -1,6 +1,6 @@
 # BandGapProject
 
-`sic_tb.py` berechnet die elektronische Bandstruktur von 4H-SiC mit einem empirischen sp³s\*-Tight-Binding-Modell und speichert sie als Diagramm `bandstruktur.png`. Mit den eingebauten Parametern ergibt sich eine indirekte Bandlücke von **3,36 eV** (Experiment: etwa 3,26 eV).
+`xH-SiC.py` berechnet die elektronische Bandstruktur von xH-SiC mit einem empirischen sp³s\*-Tight-Binding-Modell und speichert sie als Diagramm ab.
 
 ![Bandstruktur von 4H-SiC](bandstruktur.png)
 
