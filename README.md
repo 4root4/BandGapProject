@@ -18,7 +18,7 @@
 
 ```bash
 pip install numpy matplotlib
-python3 sic_tb.py
+python3 xH-SiC.py
 ```
 
 Das Programm gibt die Bandlücke in der Konsole aus und schreibt `bandstruktur.png` in das aktuelle Verzeichnis. Die Laufzeit liegt bei etwa einer Sekunde.
@@ -96,6 +96,14 @@ Alle Modellparameter stehen am Anfang der Datei und lassen sich dort direkt änd
 | `CATION` | {"Si"} | – | Atomsorte, die als Kation gilt |
 
 Die Bindungslänge in SiC beträgt etwa 1,89 Å. Damit liegt V_ss bei etwa −1,58 · 7,62 / 1,89² ≈ −3,4 eV.
+
+Die Parameter für dieses Projekt wurden den folgenden Papern entnommen:
+
+1.![TCAD Parameters for 4H-SiC: A Review](TCAD Parameters for 4H-SiC: A Review.pdf)
+
+2.![Muonium dynamics as a probe for depth-resolved properties of 4H-SiC](Muonium dynamics as a probe for depth-resolved properties of 4H-SiC.pdf)
+
+3.![Electron paramagnetic resonance tagged High Resolution](Electron paramagnetic resonance tagged High Resolution.pdf)
 
 
 ## Ausgabe und Ergebnisse
