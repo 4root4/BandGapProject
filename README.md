@@ -9,9 +9,7 @@
 - [Installation und Aufruf](#installation-und-aufruf)
 - [Physikalisches Modell](#physikalisches-modell)
 - [Parameter und Konstanten](#parameter-und-konstanten)
-- [Programmaufbau](#programmaufbau)
 - [Ausgabe und Ergebnisse](#ausgabe-und-ergebnisse)
-- [Anpassung und Erweiterung](#anpassung-und-erweiterung)
 - [Grenzen des Modells](#grenzen-des-modells)
 
 ## Installation und Aufruf
@@ -99,47 +97,6 @@ Alle Modellparameter stehen am Anfang der Datei und lassen sich dort direkt änd
 
 Die Bindungslänge in SiC beträgt etwa 1,89 Å. Damit liegt V_ss bei etwa −1,58 · 7,62 / 1,89² ≈ −3,4 eV.
 
-## Programmaufbau
-
-Das Programm läuft in vier Schritten:
-
-1. `bonds()` sucht alle Si–C-Nachbarpaare in der Einheitszelle und ihren 26 Nachbarzellen.
-2. `Hamiltonian` legt die Onsite-Energien an und berechnet für jede Bindung einmal die Matrix t(**d**).
-3. `band_structure()` diagonalisiert H(**k**) entlang des Pfads Γ–M–K–Γ–A–L–H–A und bestimmt die Bandkanten auf einem 3D-k-Netz.
-4. `plot_bands()` zeichnet die Bänder relativ zum Valenzbandmaximum und speichert das Bild.
-
-### `bonds(frac, cell, present, cutoff=2.3)`
-
-Gibt eine Liste von Tupeln `(i, j, d)` zurück: Atom i, Atom j und den Bindungsvektor d in Å. Geprüft werden alle Atome j in der eigenen Zelle und in den Nachbarzellen mit Verschiebungen von −1, 0 oder +1 je Gitterrichtung. Eine Bindung zählt, wenn ihre Länge zwischen 0 und `cutoff` liegt. Jede Bindung erscheint dabei zweimal, einmal als i→j und einmal als j→i. `present` ist eine Maske, mit der man einzelne Atome ausblenden kann.
-
-### `hamilton(si, sj, d)`
-
-Gibt die 5×5-Hopping-Matrix t(**d**) zwischen Atomsorte `si` und `sj` zurück, mit Zeilen für die Orbitale von i und Spalten für die von j. Aus `si` wird bestimmt, ob die „ca“- oder die „ac“-Parameter auf das s-Orbital von i fallen.
-
-### Klasse `Hamiltonian(frac, spec, cell, present=None)`
-
-| Attribut / Methode | Inhalt |
-| --- | --- |
-| `n` | Größe der Matrix (5 × Anzahl Atome, hier 40) |
-| `onsite` | Diagonale mit (E_s, E_p, E_p, E_p, E_s\*) je Atom |
-| `B`, `T` | Bindungsliste und die zugehörigen t-Matrizen |
-| `n_el` | Anzahl Valenzelektronen (hier 32) |
-| `H(k)` | Bloch-Hamiltonian bei k (in 1/Å, kartesisch); bei k = 0 reell |
-| `recip()` | reziproke Gittervektoren als Zeilen, 2π·(cell⁻¹)ᵀ |
-
-### `band_structure(n_seg=60)`
-
-Die Hochsymmetriepunkte stehen in `HSP` in fraktionellen reziproken Koordinaten und werden mit `recip()` in kartesische k umgerechnet. Jeder der 7 Pfadabschnitte bekommt `n_seg` Punkte; die x-Achse ist die echte Pfadlänge in 1/Å. VBM und LBM werden zusätzlich auf einem 12×12×6-Netz gesucht, damit die Bandlücke nicht vom gewählten Pfad abhängt. Die Anzahl der besetzten Bänder ist `n_el // 2` = 16.
-
-**Rückgabe:** `x`, `E` (Energien pro k-Punkt und Band), `ticks` (Positionen der Hochsymmetriepunkte), `nocc`, `vbm`, `cbm`.
-
-### `plot_bands(x, E, ticks, nocc, vbm, cbm, fn="bandstruktur.png")`
-
-Verschiebt alle Energien so, dass das VBM bei 0 eV liegt. Besetzte Bänder werden blau gezeichnet, leere rot und die Bandlücke grau hinterlegt. Ein Pfeil mit Beschriftung zeigt E_g. Der Bildausschnitt reicht von −18 bis 9 eV, gespeichert wird mit 200 dpi.
-
-### Hauptprogramm
-
-Ruft `band_structure()` und `plot_bands()` auf und gibt die Bandlücke aus.
 
 ## Ausgabe und Ergebnisse
 
@@ -162,21 +119,7 @@ Alle Energien sind relativ zum VBM angegeben. Das Valenzband ist insgesamt 16,8 
 - Die gestrichelten Linien bei 0 eV und 3,36 eV markieren VBM und LBM.
 - Der Pfeil mit Beschriftung sitzt an der Stelle des LBM auf dem Pfad, also bei M.
 - Die Abschnitte Γ–A und A–L–H–A verlaufen entlang k_z bzw. in der Ebene k_z = π/c. Dort zeigt sich die Faltung der Bänder durch die 4H-Stapelfolge.
-
-## Anpassung und Erweiterung
-
-Die meisten Anpassungen sind Änderungen an Konstanten am Anfang der Datei.
-
-| Ziel | Was ändern |
-| --- | --- |
-| Bandlücke oder Bandformen nachjustieren | `ONSITE` und `ETA` |
-| Anderer Polytyp (z. B. 6H, 2H) | `SupCell` (c), `SI_FRAC` (Stapelfolge), `SPEC0` und `U` |
-| Feinere Kurven | `n_seg` in `band_structure()` |
-| Genauere Bandkanten | Netz `(12, 12, 6)` in `band_structure()` |
-| Anderer k-Pfad | `HSP` und `PATH` |
-| Bildausschnitt, Farben, Dateiname | `plot_bands()`: `set_ylim`, Farbcodes, `fn` |
-
-Für einen anderen Polytyp muss außerdem die Anzahl der Atome stimmen: `SPEC0` braucht genau so viele Si- und C-Einträge, wie `FRAC0` Zeilen hat. Der Cutoff von 2,3 Å in `bonds()` funktioniert, solange die Si–C-Bindung bei etwa 1,9 Å und der Si–Si-Abstand bei etwa 3,1 Å liegt.
+- 
 
 ## Grenzen des Modells
 
